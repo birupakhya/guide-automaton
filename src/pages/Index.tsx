@@ -1,13 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { Hero } from "@/components/Hero";
+import { PersonaSelector } from "@/components/PersonaSelector";
+import { GuideGenerator } from "@/components/GuideGenerator";
+
+type Stage = "hero" | "personas" | "generating";
+
+interface Persona {
+  name: string;
+  description: string;
+}
 
 const Index = () => {
+  const [stage, setStage] = useState<Stage>("hero");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [personas, setPersonas] = useState<Persona[]>([]);
+
+  const handleStartGeneration = (url: string) => {
+    setWebsiteUrl(url);
+    setStage("personas");
+  };
+
+  const handlePersonasComplete = (selectedPersonas: Persona[]) => {
+    setPersonas(selectedPersonas);
+    setStage("generating");
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <main className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {stage === "hero" && <Hero onStartGeneration={handleStartGeneration} />}
+      {stage === "personas" && <PersonaSelector onComplete={handlePersonasComplete} />}
+      {stage === "generating" && <GuideGenerator url={websiteUrl} personas={personas} />}
+    </main>
   );
 };
 
